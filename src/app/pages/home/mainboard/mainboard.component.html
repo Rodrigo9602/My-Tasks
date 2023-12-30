@@ -1,0 +1,69 @@
+<div class="home-wrapper">
+    <div class="sidebar">
+        <header>
+            <p class="header">Mainboard</p>
+        </header>
+
+        <div class="filters">
+
+        </div>
+    </div>
+    <div class="content">
+        <header>
+            <nav>
+                <p class="header">My Tasks</p>
+                <div class="search-wrapper">
+                    <div class="input-wrapper">
+                        <input type="text" class="input-sec" placeholder="Search" name="taskName"
+                            pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel" [(ngModel)]="searchStr"
+                            required="">
+
+                        <button type="button" class="btn-search-icon" (click)="onSearch()"
+                            [disabled]="taskName.invalid">
+                            <fa-icon [icon]="searchIcon" />
+                        </button>
+                    </div>
+                </div>
+                <div class="options-wrapper">
+                    <button class="btn-icon" (click)="onChangeMode()">
+                        <fa-icon [icon]="modeIcon" />
+                    </button>
+                    <button class="btn-icon" (click)="onUserMenu()">
+                        <fa-icon [icon]="userIcon" />
+                    </button>
+
+                    <div [ngClass]="{'user-menu-show': !userMenuHide , 'user-menu-hide': userMenuHide}">
+                        <div class="menu-item">
+                            <button class="btn-options">
+                                <fa-icon [icon]="editIcon"></fa-icon>
+                                <p>edit profile</p>
+                            </button>
+                        </div>
+
+                        <div class="menu-item">
+                            <button class="btn-options" (click)="onLogout()">
+                                <fa-icon [icon]="logoutIcon"></fa-icon>
+                                <p>log out</p>
+                            </button>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </nav>
+        </header>
+        <div class="main-content">
+            <ng-container *ngIf="user.name !== '' ">
+                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)" (taskRemoved)="onRemoveTask($event)"/>
+            </ng-container>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="row">
+            <p>Created with </p><fa-icon [icon]="loveIcon" class="heart-icon"/><p> and </p><fa-icon [icon]="coffeIcon" class="coffee-icon"/>
+        </div>
+        
+        
+    </div>
+</div>

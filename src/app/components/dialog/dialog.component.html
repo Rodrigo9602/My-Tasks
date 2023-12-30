@@ -1,0 +1,40 @@
+<div class="modal-wrapper">
+    <div class="titleSelection" [ngSwitch]="data.form">
+        <h2 mat-dialog-title *ngSwitchCase="'addTask'">Another task to the list...</h2>
+    </div>
+
+
+    <mat-dialog-content [ngSwitch]="data.form">
+        <form #productForm="ngForm" class="custom-form" id="add-form" *ngSwitchCase="'addTask'">
+            <div class="input-wrapper">
+                <input type="text" class="input-alt" placeholder="name" name="taskName"
+                    pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel"
+                    [style.border]="!taskName.valid && taskName.touched ? '1px solid red':'1px solid var(--text-color)' "
+                    [(ngModel)]="task.name" required>
+                <div class="input-icon-alt">
+                    <fa-icon [icon]="nameIcon" />
+                </div>
+            </div> 
+
+            <div class="input-wrapper">
+                <textarea class="input-text" placeholder="description" name="taskDesc" #taskDesc="ngModel" [(ngModel)]="task.description" required></textarea>                
+            </div>          
+
+            <div class="input-wrapper">
+                <input type="text" class="input-alt" placeholder="ending date" name="taskEnd"
+                    #taskEnd="ngModel" [(ngModel)]="date"
+                    onfocus="(this.type='date')" onblur="(this.type='text')" required>
+                <div class="input-icon-alt">
+                    <fa-icon [icon]="dateIcon" />
+                </div>
+            </div>          
+
+
+        </form>   
+    </mat-dialog-content>
+
+    <mat-dialog-actions>        
+        <button class="btn btn-success" [mat-dialog-close]="data.dataObject" (click)="onSubmit()">Submit</button>
+        <button class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+    </mat-dialog-actions>
+</div>
