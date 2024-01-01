@@ -34,17 +34,23 @@ export class TaskService {
   };
 
   async updateTask(id: string, updateTaskDto: UpdateTaskDto): Promise<Task | Error> {
+    
     try {
       const task = await this.findOne(id);
       if (task) {
         const taskState = task.get('state');
+        if(taskState !== updateTaskDto.state) {
+          task.set({lastChange: new Date()});
+        }
 
         if (taskState === 'creado') {
           task.set(updateTaskDto);
           const updatedTask = await task.save();
           return updatedTask;
         } else {
-          throw new ConflictException('Cannot update task with state other than "creado"');
+          task.set({ state: updateTaskDto.state });
+          const updatedTask = await task.save();
+          return updatedTask;
         }
       } else {
         throw new NotFoundException(`Task with ID ${id} not found`);
@@ -54,22 +60,7 @@ export class TaskService {
     }
   };
 
-  async updateState(id: string, params: any): Promise<Task | Error> {
-    try {
-      // search the task and validate the state
-      const task = await this.findOne(id);
-      const validStates = ['creado', 'en progreso', 'terminado', 'no completado'];
-      if (validStates.includes(params.state)) {
-        task.set({ state: params.state });
-        return task.save();
-      } else {
-        throw new ConflictException('Invalid task state');
-      }
-    } catch (error) {
-      return new ConflictException('Error updating task:', error.message);
-    }
-  };
-
+ 
   async remove(id: string): Promise<any> {
     try {
       const task = await this.findOne(id);

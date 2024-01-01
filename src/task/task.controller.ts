@@ -25,15 +25,12 @@ export class TaskController {
     return this.taskService.findOne(id);
   }
 
-  @Patch('updateTask/:id')
+  @Patch(':id')
   updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
     return this.taskService.updateTask(id, updateTaskDto);
   }
 
-  @Patch('updateState/:id')
-  updateState(@Param('id') id: string, @Body() params:any) {
-    return this.taskService.updateState(id, params);
-  }
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {
