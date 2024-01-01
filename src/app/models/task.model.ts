@@ -5,6 +5,7 @@ export class Task {
         public description: string,
         public creationDate: Date,
         public endingDate: Date,
+        public lastChange: Date,
         public state:string,               
     ) {}
 };

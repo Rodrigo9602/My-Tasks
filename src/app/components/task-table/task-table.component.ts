@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatDialogModule } from '@angular/material/dialog';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DialogComponent } from '../dialog/dialog.component';
@@ -27,34 +27,47 @@ import { Toast } from '../../global/toast.global';
   styleUrl: './task-table.component.scss'
 })
 export class TaskTableComponent implements OnInit, OnDestroy {
-  public tasks: Array<Task> = [];  
+  public tasks: Array<Task> = [];
 
   // pagination vars
   public pagedTasks: Array<Task> = [];
-  public pageSize:number = 5;
-  public pageIndex:number = 0;
+  public pageSize: number = 4;
+  public pageIndex: number = 0;
 
 
   public deleteIcon = faTrashAlt;
   public updateIcon = faPenToSquare;
-  
+
   @Input() userName: string = '';
+  @Input() inputTasks: Array<Task> = [];
   @Output() taskAdded = new EventEmitter<Task>();
+  @Output() taskUpdated = new EventEmitter<Task>();
   @Output() taskRemoved = new EventEmitter<Task>();
 
-  private suscription:Subscription | undefined;
 
-  constructor(private _dialog: MatDialog, private _taskService:TaskService, public datePipe: DatePipe, private dataService: DataService) { }
+  private suscriptions: Array<Subscription> = [];
 
-  ngOnInit(): void { 
-    this.dataService.task$.subscribe(tasks => {      
-      this.tasks = tasks;
+  constructor(private _dialog: MatDialog, private _taskService: TaskService, public datePipe: DatePipe, private dataService: DataService) { }
 
+  ngOnInit(): void {
+    if (this.inputTasks.length === 0) {
+      this.dataService.task$.subscribe(tasks => {
+        this.tasks = tasks;
+        this.handlePageEvent({
+          pageIndex: 0,
+          pageSize: this.pageSize,
+        });
+      });
+    } else {
+      this.tasks = this.inputTasks;
       this.handlePageEvent({
         pageIndex: 0,
-        pageSize: this.pageSize,  
+        pageSize: this.pageSize,
       });
-    });
+    }
+
+    
+
   }
 
   onAddTask() {
@@ -67,9 +80,9 @@ export class TaskTableComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(res => {
-      if (res !== undefined) {        
-        this.suscription = this._taskService.save(res.name, res.description, res.endingDate).subscribe({
-          next: res => {            
+      if (res !== undefined) {
+        this.suscriptions.push(this._taskService.save(res.name, res.description, res.endingDate).subscribe({
+          next: res => {
             this.taskAdded.emit(res);
           },
           error: e => {
@@ -78,41 +91,81 @@ export class TaskTableComponent implements OnInit, OnDestroy {
               title: e.error.message
             });
           }
-        });
+        }));
+
+
       }
     });
   }
 
 
-  handlePageEvent(event:any) {
+  handlePageEvent(event: any) {
     this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;    
+    this.pageSize = event.pageSize;
     this.pagedTasks = this.tasks.slice(this.pageIndex * this.pageSize, this.pageIndex * this.pageSize + this.pageSize);
     
   }
 
-  formatDate(dateIso: Date) { 
-    const date = new Date(dateIso);   
-    const localDate = new Date(date.getTime() + date.getTimezoneOffset()*60*1000);
+  formatDate(dateIso: Date) {
+    const date = new Date(dateIso);
+    const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
     return this.datePipe.transform(localDate, 'dd/MM/yyyy');
   }
 
-  updateTask(task:Task) {
+  updateTask(task: Task) {
+    if (task.state === 'terminado' || task.state === 'no completado') {
+      Toast.fire({
+        icon: 'info',
+        title: 'Not changes are allowed'
+      });
+    } else {
+      const dialogRef = this._dialog.open(
+        DialogComponent, {
+        width: '30%',
+        minWidth: '25rem',
+        height: '500px',
+        data: { form: 'updTask', dataObject: { task } }
+      });
+
+      dialogRef.afterClosed().subscribe(res => {
+        if (res !== undefined) {
+          this.suscriptions.push(this._taskService.updateTask(res.task._id, res.task.name, res.task.description, res.task.endingDate, res.task.state).subscribe({
+            next: res => {
+              Toast.fire({
+                icon: 'success',
+                title: 'Task updated'
+              });
+
+              this.taskUpdated.emit(res);
+            },
+            error: e => {
+              Toast.fire({
+                icon: 'error',
+                title: e.error.message
+              });
+            }
+          }));
+        }
+      });
+    }
 
   }
 
-  deleteTask(task:Task) {
-    this._taskService.delete(task._id).subscribe({
-      next: res => {       
+  deleteTask(task: Task) {
+    this.suscriptions.push(this._taskService.delete(task._id).subscribe({
+      next: res => {
         this.taskRemoved.emit(task);
       },
       error: e => {
-        console.log(e);
+        Toast.fire({
+          icon: 'error',
+          title: e.error.message
+        });
       }
-    });
+    }));
   }
 
   ngOnDestroy(): void {
-    this.suscription?.unsubscribe();
+    this.suscriptions.forEach(suscription => suscription.unsubscribe());
   }
 }

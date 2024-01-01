@@ -1,3 +1,4 @@
+
 <div class="task-table-message" *ngIf="tasks.length === 0; else taskTableWrapper">
     <p class="header">You have not task registered yet!</p>
     <p class="subheader">Lets change that</p>
@@ -9,7 +10,7 @@
 
 <ng-template #taskTableWrapper>
     <div class="task-table-wrapper">
-        <header>
+        <header *ngIf="inputTasks.length === 0">
             <p>{{userName}}'s tasks</p>
             <button class="btn-primary" (click)="onAddTask()">Add new task</button>
         </header>
@@ -35,7 +36,7 @@
                         <td>{{formatDate(task.endingDate)}}</td>
                         <td [ngSwitch]="task.state">
                             <div class="square" *ngSwitchCase="'creado'" style="background-color: #1f86f3;"></div>
-                            <div class="square" *ngSwitchCase="'en proceso'" style="background-color: #eff31f;"></div>
+                            <div class="square" *ngSwitchCase="'en progreso'" style="background-color: #eff31f;"></div>
                             <div class="square" *ngSwitchCase="'terminado'" style="background-color: #58f31f;"></div>
                             <div class="square" *ngSwitchCase="'no completado'" style="background-color: #f31f1f;">
                             </div>

@@ -23,18 +23,11 @@ export class TaskService {
     return this._http.post(this.url, params, { headers: headers });
   };
 
-  updateTask(id:string, name:string, description:string, endingDate: Date):Observable<any> {
-    let params = JSON.stringify({name:name, description:description, endingDate:endingDate});
+  updateTask(id:string, name:string, description:string, endingDate: Date, state:string):Observable<any> {
+    let params = JSON.stringify({name:name, description:description, endingDate:endingDate, state: state});
     let headers = this.headers;
 
-    return this._http.patch(this.url+`updateTask/${id}`, params, { headers: headers });
-  };
-
-  updateState(id:string, state:string):Observable<any> {
-    let params = JSON.stringify({state:state});
-    let headers = this.headers;
-
-    return this._http.patch(this.url+`updateState/${id}`, params, { headers: headers });
+    return this._http.patch(this.url+id, params, { headers: headers });
   };
 
   delete(id:string):Observable<any> {

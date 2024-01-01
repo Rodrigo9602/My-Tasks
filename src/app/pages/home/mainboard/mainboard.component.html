@@ -5,7 +5,20 @@
         </header>
 
         <div class="filters">
-
+            <p>Tasks filtering panel</p>
+            <div class="filters-wrapper">
+                <mat-select name="taskState" [(value)]="filter" (valueChange)="onFilters()" #stateSelector> 
+                    <mat-option value='undefined' disabled>filter by state</mat-option>            
+                    @for (state of states; track state) {                        
+                    <mat-option value={{state}}>{{state}}</mat-option>
+                    }
+                </mat-select>
+                <button class="btn-secondary" [disabled]="showSearchResults">Show oldest to-do</button>
+                <button class="btn-secondary" [disabled]="showSearchResults" (click)="onShowLateTasks()">
+                    <fa-icon [icon]="clockIcon" />
+                    late tasks
+                </button>
+            </div>
         </div>
     </div>
     <div class="content">
@@ -14,7 +27,7 @@
                 <p class="header">My Tasks</p>
                 <div class="search-wrapper">
                     <div class="input-wrapper">
-                        <input type="text" class="input-sec" placeholder="Search" name="taskName"
+                        <input type="text" class="input-sec" placeholder="Search by name" name="taskName"
                             pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel" [(ngModel)]="searchStr"
                             required="">
 
@@ -53,17 +66,30 @@
 
             </nav>
         </header>
-        <div class="main-content">
+        <div class="main-content" *ngIf="!showSearchResults">
             <ng-container *ngIf="user.name !== '' ">
-                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)" (taskRemoved)="onRemoveTask($event)"/>
+                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
+                    (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)" />
             </ng-container>
+        </div>
+
+        <div class="main-content" *ngIf="showSearchResults">
+            <header>
+                <p>Search results</p>
+                <button class="btn-primary" (click)="onEndSearch()">Back to tasks list</button>
+            </header>
+            <div class="table-wrapper">
+                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
+                    (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)" [inputTasks]="tasks"/>
+            </div>            
         </div>
     </div>
     <div class="footer">
         <div class="row">
-            <p>Created with </p><fa-icon [icon]="loveIcon" class="heart-icon"/><p> and </p><fa-icon [icon]="coffeIcon" class="coffee-icon"/>
+            <p>Created with </p><fa-icon [icon]="loveIcon" class="heart-icon" />
+            <p> and </p><fa-icon [icon]="coffeIcon" class="coffee-icon" />
         </div>
-        
-        
+
+
     </div>
 </div>
