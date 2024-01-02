@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: task-nestjs-api
+    image: my-task-bck
+    restart: always
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run start:dev      
+    ports: 
+      - "3000:3000"
+    links:
+      - mongodb
+  mongodb:
+    container_name: mongo-gdbs
+    image: mongo:7.0.4    
+    ports:
+      - 27017:27017
+    volumes:
+      - ./api/app:/mongodb-data
+volumes:
+  mongodb-data:
+    driver: local
