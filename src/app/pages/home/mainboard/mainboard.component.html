@@ -1,4 +1,5 @@
 <div class="home-wrapper">
+
     <div class="sidebar">
         <header>
             <p class="header">Mainboard</p>
@@ -7,31 +8,40 @@
         <div class="filters">
             <p>Tasks filtering panel</p>
             <div class="filters-wrapper">
-                <mat-select name="taskState" [(value)]="filter" (valueChange)="onFilters()" #stateSelector> 
-                    <mat-option value='undefined' disabled>filter by state</mat-option>            
-                    @for (state of states; track state) {                        
+                <mat-select name="taskState" [(value)]="filter" (valueChange)="onFilter('state')" #stateSelector>
+                    <mat-option value='undefined' disabled>filter by state</mat-option>
+                    @for (state of states; track state) {
                     <mat-option value={{state}}>{{state}}</mat-option>
                     }
                 </mat-select>
-                <button class="btn-secondary" [disabled]="showSearchResults">Show oldest to-do</button>
-                <button class="btn-secondary" [disabled]="showSearchResults" (click)="onShowLateTasks()">
+                <button class="btn-secondary" [disabled]="showSearchResults" (click)="onFilter('oldest-todo')">Show
+                    oldest to-do</button>
+                <button class="btn-secondary" [disabled]="showSearchResults" (click)="onFilter('late-task')">
                     <fa-icon [icon]="clockIcon" />
                     late tasks
                 </button>
             </div>
         </div>
     </div>
+
+
+
     <div class="content">
         <header>
             <nav>
-                <p class="header">My Tasks</p>
+                <p class="header title">My Tasks</p>
+                <button class="btn-menu" (click)="toggleSidenav()">
+                    <span [ngClass]="!opened ? 'toggler-icon top-bar' : 'toggler-icon top-bar-pressed' "></span>
+                    <span [ngClass]="!opened ? 'toggler-icon middle-bar' : 'toggler-icon middle-bar-pressed' "></span>
+                    <span [ngClass]="!opened ? 'toggler-icon bottom-bar' : 'toggler-icon bottom-bar-pressed' "></span>
+                </button>
                 <div class="search-wrapper">
                     <div class="input-wrapper">
-                        <input type="text" class="input-sec" placeholder="Search by name" name="taskName"
+                        <input type="text" class="input-sec" placeholder="type a word..." name="taskName"
                             pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel" [(ngModel)]="searchStr"
                             required="">
 
-                        <button type="button" class="btn-search-icon" (click)="onSearch()"
+                        <button type="button" class="btn-search-icon" (click)=" onFilter('search')"
                             [disabled]="taskName.invalid">
                             <fa-icon [icon]="searchIcon" />
                         </button>
@@ -46,12 +56,6 @@
                     </button>
 
                     <div [ngClass]="{'user-menu-show': !userMenuHide , 'user-menu-hide': userMenuHide}">
-                        <div class="menu-item">
-                            <button class="btn-options">
-                                <fa-icon [icon]="editIcon"></fa-icon>
-                                <p>edit profile</p>
-                            </button>
-                        </div>
 
                         <div class="menu-item">
                             <button class="btn-options" (click)="onLogout()">
@@ -66,23 +70,69 @@
 
             </nav>
         </header>
-        <div class="main-content" *ngIf="!showSearchResults">
-            <ng-container *ngIf="user.name !== '' ">
-                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
-                    (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)" />
-            </ng-container>
-        </div>
 
-        <div class="main-content" *ngIf="showSearchResults">
-            <header>
-                <p>Search results</p>
-                <button class="btn-primary" (click)="onEndSearch()">Back to tasks list</button>
-            </header>
-            <div class="table-wrapper">
-                <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
-                    (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)" [inputTasks]="tasks"/>
-            </div>            
-        </div>
+
+        <mat-sidenav-container>
+            <mat-sidenav [(opened)]="opened">
+                <header>
+                    <p class="header">Mainboard</p>
+                </header>
+
+                <div class="filters">
+                    <p>Tasks filtering panel</p>
+                    <div class="filters-wrapper">
+                        <mat-select name="taskState" [(value)]="filter" (valueChange)="onFilter('state')"
+                            #stateSelector>
+                            <mat-option value='undefined' disabled>filter by state</mat-option>
+                            @for (state of states; track state) {
+                            <mat-option value={{state}}>{{state}}</mat-option>
+                            }
+                        </mat-select>
+                        <button class="btn-secondary" [disabled]="showSearchResults"
+                            (click)="onFilter('oldest-todo')">Show
+                            oldest to-do</button>
+                        <button class="btn-secondary" [disabled]="showSearchResults" (click)="onFilter('late-task')">
+                            <fa-icon [icon]="clockIcon" />
+                            late tasks
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-wrapper">
+                    <div class="input-wrapper">
+                        <input type="text" class="input-sec" placeholder="type a word..." name="taskName"
+                            pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel" [(ngModel)]="searchStr"
+                            required="">
+
+                        <button type="button" class="btn-search-icon" (click)=" onFilter('search')"
+                            [disabled]="taskName.invalid">
+                            <fa-icon [icon]="searchIcon" />
+                        </button>
+                    </div>
+                </div>
+
+            </mat-sidenav>
+            <mat-sidenav-content>
+                <div class="main-content" *ngIf="!showSearchResults">
+                    <ng-container *ngIf="user.name !== '' ">
+                        <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
+                            (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)" />
+                    </ng-container>
+                </div>
+
+                <div class="main-content" *ngIf="showSearchResults">
+                    <header>
+                        <p>Search results</p>
+                        <button class="btn-primary custom-primary" (click)="onEndSearch()">Back to tasks list</button>
+                    </header>
+                    <div class="table-wrapper">
+                        <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"
+                            (taskRemoved)="onRemoveTask($event)" (taskUpdated)="onUpdateTask($event)"
+                            [inputTasks]="tasks" />
+                    </div>
+                </div>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
     </div>
     <div class="footer">
         <div class="row">
@@ -92,4 +142,5 @@
 
 
     </div>
+
 </div>

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit} from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
@@ -7,12 +7,14 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
-
+import { Task } from '../../models/task.model';
 import { TaskInterface } from '../../interfaces/task.interface';
 
-import { faUser, faFileLines, faFileText, faCalendarTimes, faCalendar } from '@fortawesome/free-regular-svg-icons';
+import { faUser, faFileLines, faFileText, faCalendarTimes, faCalendar, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
 
-import { Task } from '../../models/task.model';
+
+
 
 
 
@@ -32,7 +34,7 @@ export class DialogComponent implements OnInit {
   public date: any;
   public minDate: string = '';
   public states: Array<string> = ['creado', 'en progreso', 'terminado', 'no completado'];
-
+  public showPassword: boolean = false;
   
 
   public nameIcon = faUser;
@@ -40,6 +42,8 @@ export class DialogComponent implements OnInit {
   public descIcon = faFileText;
   public calendarIcon = faCalendar;
   public dateIcon = faCalendarTimes;
+  public passIcon = faLock;
+  public showIcon = faEye;
 
   constructor(
     public datePipe: DatePipe,
@@ -61,7 +65,7 @@ export class DialogComponent implements OnInit {
       lastChange: new Date(),
       state: ''
     };
-    
+
 
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
@@ -69,12 +73,13 @@ export class DialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     if (this.data.form === 'updTask' && this.data.dataObject.task.state === 'creado') {
       this.updateTaskData = true;
       this.taskUpdate = JSON.parse(JSON.stringify(this.data.dataObject.task));
       this.formatDate();
     }
-  }  
+  }
 
 
 
@@ -89,9 +94,15 @@ export class DialogComponent implements OnInit {
     this.DateChanged = true;
     this.taskUpdate.endingDate = new Date(event);
   }
-  
+
+  onShowPassword() {
+    this.showPassword = !this.showPassword;
+    this.showPassword ? this.showIcon = faEyeSlash : this.showIcon = faEye;
+  }
+
 
   onSubmit() {
+
     switch (this.data.form) {
       case 'addTask':
         this.task.endingDate = this.date;
@@ -118,9 +129,9 @@ export class DialogComponent implements OnInit {
           this.data.dataObject.task.state = this.taskUpdate.state;
           this.dialogRef.close(this.data.dataObject);
         }
-
-
         break;
+
+
     }
   }
 

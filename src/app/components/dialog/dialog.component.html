@@ -2,12 +2,13 @@
     <div class="titleSelection" [ngSwitch]="data.form">
         <h2 mat-dialog-title *ngSwitchCase="'addTask'">Another task to the list...</h2>
         <h2 mat-dialog-title *ngSwitchCase="'updTask'">Lets change something here...</h2>
+        <h2 mat-dialog-title *ngSwitchCase="'updUsr'">Looking for a change?</h2>
     </div>
 
 
     <mat-dialog-content [ngSwitch]="data.form">
         <!--Add task form-->
-        <form #productForm="ngForm" class="custom-form" id="add-form" *ngSwitchCase="'addTask'">
+        <form #customForm="ngForm" class="custom-form" id="add-form" *ngSwitchCase="'addTask'">
             <div class="input-wrapper">
                 <input type="text" class="input-alt" placeholder="name" name="taskName"
                     pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel"
@@ -33,10 +34,15 @@
                     <fa-icon [icon]="dateIcon" />
                 </div>
             </div>
+
+            <mat-dialog-actions>
+                <button class="btn btn-success" [mat-dialog-close]="data.dataObject" (click)="onSubmit()" [disabled]="customForm.invalid">Submit</button>
+                <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+            </mat-dialog-actions>
         </form>
         <!--Update task form-->
         <div *ngIf="updateTaskData, else updateState">
-            <form #productForm="ngForm" class="custom-form" id="upd-form" *ngSwitchCase="'updTask'">
+            <form #customForm="ngForm" class="custom-form" id="upd-form" *ngSwitchCase="'updTask'">
                 <div class="input-wrapper">
                     <input type="text" class="input-alt" placeholder="name" name="taskName"
                         pattern="^[a-zA-Z0-90-9áéíóúÁÉÍÓÚñÑ\s]+$" #taskName="ngModel"
@@ -66,25 +72,31 @@
                     <mat-option value={{state}}>{{state}}</mat-option>
                     }
                 </mat-select>
+
+                <mat-dialog-actions>
+                    <button class="btn btn-success" [mat-dialog-close]="data.dataObject" (click)="onSubmit()" [disabled]="customForm.invalid">Submit</button>
+                    <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+                </mat-dialog-actions>
             </form>
         </div>
 
         <ng-template #updateState>
-            <form #productForm="ngForm" class="custom-form" id="upd-form" *ngSwitchCase="'updTask'">
+            <form #customForm="ngForm" class="custom-form" id="upd-form" *ngSwitchCase="'updTask'">
                 <p>Only a change in the task status is allowed</p>
                 <mat-select name="taskState" [(value)]="taskUpdate.state">
                     <mat-option value="en progreso" disabled>en progreso</mat-option>
                     <mat-option value="terminado">terminado</mat-option>
                     <mat-option value="no completado">no completado</mat-option>
                 </mat-select>
+
+                <mat-dialog-actions>
+                    <button class="btn btn-success" [mat-dialog-close]="data.dataObject" (click)="onSubmit()" [disabled]="customForm.invalid">Submit</button>
+                    <button type="button" class="btn btn-cancel" (click)="onCancel()">Cancel</button>
+                </mat-dialog-actions>
             </form>
-        </ng-template>
+        </ng-template>       
 
 
     </mat-dialog-content>
-
-    <mat-dialog-actions>
-        <button class="btn btn-success" [mat-dialog-close]="data.dataObject" (click)="onSubmit()">Submit</button>
-        <button class="btn btn-cancel" (click)="onCancel()">Cancel</button>
-    </mat-dialog-actions>
+   
 </div>

@@ -74,13 +74,14 @@ export class TaskTableComponent implements OnInit, OnDestroy {
     const dialogRef = this._dialog.open(
       DialogComponent, {
       width: '30%',
-      minWidth: '25rem',
+      minWidth: '30rem',
       height: '500px',
       data: { form: 'addTask', dataObject: {} }
     });
 
     dialogRef.afterClosed().subscribe(res => {
       if (res !== undefined) {
+        console.log(res);
         this.suscriptions.push(this._taskService.save(res.name, res.description, res.endingDate).subscribe({
           next: res => {
             this.taskAdded.emit(res);
@@ -122,7 +123,7 @@ export class TaskTableComponent implements OnInit, OnDestroy {
       const dialogRef = this._dialog.open(
         DialogComponent, {
         width: '30%',
-        minWidth: '25rem',
+        minWidth: '30rem',
         height: '500px',
         data: { form: 'updTask', dataObject: { task } }
       });

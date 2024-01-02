@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { UserService } from '../../../services/user.service';
 import { ModeConfigService } from '../../../services/mode.service';
@@ -10,7 +11,7 @@ import { User } from '../../../models/user.model';
 import { Subscription } from 'rxjs';
 
 import { TaskTableComponent } from '../../../components/task-table/task-table.component';
-
+import { DialogComponent } from '../../../components/dialog/dialog.component';
 
 
 import { faMoon, faSun, faUserCircle, faEdit, faClock } from '@fortawesome/free-regular-svg-icons';
@@ -25,7 +26,7 @@ import { DataService } from '../../../services/data.service';
 @Component({
   selector: 'app-mainboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, TaskTableComponent, MatSelectModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, MatSelectModule, TaskTableComponent, DialogComponent, MatSidenavModule],
   templateUrl: './mainboard.component.html',
   styleUrl: './mainboard.component.scss'
 })
@@ -39,6 +40,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
   public coffeIcon = faCoffee;
   public clockIcon = faClock;
 
+  public opened:boolean = false;
   public searchStr: string = '';
   public user: User;
   public currentMode: boolean = true;
@@ -57,7 +59,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
     private _sessionService: SessionService,
     private _userService: UserService,
     private _mode: ModeConfigService,
-    private dataService: DataService,
+    private dataService: DataService,   
   ) {
     this.user = {
       _id: '',
@@ -92,33 +94,109 @@ export class MainboardComponent implements OnInit, OnDestroy {
     this.dataService.task$.subscribe(tasks => {
       this.user.tasks = tasks;
     });
+  };
+
+
+  onChangeMode() {
+    this.currentMode = !this.currentMode;
+    this.currentMode ? this.modeIcon = faMoon : this.modeIcon = faSun;
+    this._mode.changeMode(this.currentMode);
+  };
+
+  toggleSidenav() {
+    this.opened = !this.opened;   
   }
 
+  // user related methods
 
-  onSearch() {
+
+
+  onUserMenu() {
+    this.userMenuHide = !this.userMenuHide;
+  };
+
+
+
+  onLogout() {
+    this._sessionService.logout();
+  };
+
+
+  // filters and search realated methods
+
+  // onFilter Method definition 
+  onFilter(type:string) {
     this.tasks = [];
+    const now = new Date();
+    let oldestUnchangedTask: Task | undefined;
+
     for (let i = 0; i < this.user.tasks.length; i++) {
-      if (this.user.tasks[i].name === this.searchStr) {
-        this.tasks.push(this.user.tasks[i]);
+      switch (type) {
+        case 'search': 
+
+          const escapedTerms = this.searchStr.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+          const regex = new RegExp(escapedTerms.split(' ').join('|'), 'gi');
+
+          if (this.user.tasks[i].name.match(regex)) {
+            this.tasks.push(this.user.tasks[i]);
+          }
+        break;
+
+        case 'late-task':
+          let endingDate = new Date (this.user.tasks[i].endingDate);          
+          if( endingDate.getTime() < now.getTime() && this.user.tasks[i].state === 'en progreso') {
+            this.tasks.push(this.user.tasks[i]);
+          }
+        break;
+
+        case 'state':
+          if (this.user.tasks[i].state === this.filter) {
+            this.tasks.push(this.user.tasks[i]);
+          }
+        break;
+
+        case 'oldest-todo':
+          
+          let longestDurationWithoutChange = 0;
+          let lastChange = new Date (this.user.tasks[i].lastChange);
+
+          if(this.user.tasks[i].state === 'en progreso') {
+            const duration = now.getTime() - lastChange.getTime();
+
+            if (duration > longestDurationWithoutChange) {
+              longestDurationWithoutChange = duration;
+              oldestUnchangedTask = this.user.tasks[i];
+            }
+          }         
+          
+        break;
       }
     }
+
+    if(oldestUnchangedTask) {
+      this.tasks.push(oldestUnchangedTask);
+    }
+
     if (this.tasks.length === 0) {
       Toast.fire({
         icon: 'info',
-        title: 'Task was not found'
+        title: 'Sorry, we found nothing'
       });
 
     } else {
       Toast.fire({
         icon: 'success',
-        title: 'Task was found'
+        title: 'Some tasks were found'
       });
 
       this.showSearchResults = true;
       this.stateSelector!.disabled = true;
     }
 
-  }
+
+    
+  };
+
 
   onEndSearch() {
     this.searchStr = '';
@@ -126,74 +204,9 @@ export class MainboardComponent implements OnInit, OnDestroy {
     this.stateSelector!.writeValue('undefined');
     this.stateSelector!.disabled = false;
     this.showSearchResults = false;
-  }
+  }; 
 
-  onFilters() { 
-
-      this.tasks = [];
-      for (let i = 0; i < this.user.tasks.length; i++) {
-        if (this.user.tasks[i].state === this.filter) {
-          this.tasks.push(this.user.tasks[i]);
-        }
-      }
-
-      if (this.tasks.length === 0) {
-        Toast.fire({
-          icon: 'info',
-          title: 'Not a single task was found',
-          timer: 2000
-        });
-
-      } else {
-        Toast.fire({
-          icon: 'success',
-          title: 'Tasks found'
-        });
-
-        this.showSearchResults = true;
-        this.stateSelector!.disabled = true;
-      }    
-    
-  }
-
-
-  onShowLateTasks() {
-    this.tasks = [];
-    for (let i = 0; i < this.user.tasks.length; i++) {
-      if(this.user.tasks[i].endingDate > new Date() && this.user.tasks[i].state === 'en progreso') {
-        this.tasks.push(this.user.tasks[i]);
-      }
-    }
-
-    if (this.tasks.length === 0) {
-      Toast.fire({
-        icon: 'info',
-        title: 'Congratulations!',
-        text: 'You have zero tasks out of time',
-        timer: 2000
-      });
-
-    } else {
-      Toast.fire({
-        icon: 'success',
-        title: 'Tasks found'
-      });
-
-      this.showSearchResults = true;
-      this.stateSelector!.disabled = true;
-    }    
-  }
-
-  onChangeMode() {
-    this.currentMode = !this.currentMode;
-    this.currentMode ? this.modeIcon = faMoon : this.modeIcon = faSun;
-    this._mode.changeMode(this.currentMode);
-  }
-
-  onUserMenu() {
-    this.userMenuHide = !this.userMenuHide;
-  }
-
+  // tasks operations realated methods
   onAddTask(response: Task) {
     this.suscriptions.push(this._userService.addTask(this.user._id, response._id).subscribe({
       next: res => {
@@ -246,9 +259,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
     this.showSearchResults = false;
   }
 
-  onLogout() {
-    this._sessionService.logout();
-  }
+
 
   ngOnDestroy(): void {
     this.suscriptions.forEach(suscription => suscription.unsubscribe());

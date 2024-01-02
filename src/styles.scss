@@ -37,9 +37,6 @@ a {
     text-decoration: none;
 }
 
-p {
-    pointer-events: none;
-}
 
 .form-wrapper {
     display: flex;
@@ -47,7 +44,7 @@ p {
     align-items: center;
     justify-content: center;
     width: 30%;
-    min-width: 25rem;
+    min-width: 23rem;
     background-color: #ffffff3f;
     backdrop-filter: blur(4px);
     box-shadow: rgba(37, 37, 230, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
@@ -212,7 +209,8 @@ p {
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
-.btn-secondary:disabled {
+.btn-secondary:disabled,
+.btn-success:disabled {
     cursor: not-allowed;
 }
 
@@ -245,8 +243,12 @@ p {
     font-family: 'poppins';
     font-size: 1.125rem;
     color: var(--bg);
+    padding: 0 15px 10px 15px;
+    text-align: center;
 
     .redirection-link {
         color: #000;
+        z-index: 2;
+        cursor: pointer ;
     }
 }
