@@ -81,7 +81,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+- Author - [Rodrigo Fernández](https://www.linkedin.com/in/rodrigo-fern%C3%A1ndez-3aa626258)
 
 ## License
 
