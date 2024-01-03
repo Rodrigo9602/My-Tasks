@@ -15,7 +15,7 @@ import { DialogComponent } from '../../../components/dialog/dialog.component';
 
 
 import { faMoon, faSun, faUserCircle, faEdit, faClock } from '@fortawesome/free-regular-svg-icons';
-import { faSearch, faRightFromBracket, faHeart, faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faRightFromBracket, faHeart, faCoffee, faClose } from '@fortawesome/free-solid-svg-icons';
 import { Task } from '../../../models/task.model';
 import { Toast } from '../../../global/toast.global';
 import { SessionService } from '../../../services/session.service';
@@ -39,6 +39,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
   public loveIcon = faHeart;
   public coffeIcon = faCoffee;
   public clockIcon = faClock;
+  public returnIcon = faClose;
 
   public opened:boolean = false;
   public searchStr: string = '';
@@ -127,13 +128,13 @@ export class MainboardComponent implements OnInit, OnDestroy {
   // onFilter Method definition 
   onFilter(type:string) {
     this.tasks = [];
+    let longestDurationWithoutChange = 0;
     const now = new Date();
     let oldestUnchangedTask: Task | undefined;
 
     for (let i = 0; i < this.user.tasks.length; i++) {
       switch (type) {
         case 'search': 
-
           const escapedTerms = this.searchStr.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
           const regex = new RegExp(escapedTerms.split(' ').join('|'), 'gi');
 
@@ -143,10 +144,10 @@ export class MainboardComponent implements OnInit, OnDestroy {
         break;
 
         case 'late-task':
-          let endingDate = new Date (this.user.tasks[i].endingDate);          
-          if( endingDate.getTime() < now.getTime() && this.user.tasks[i].state === 'en progreso') {
+          let endingDate = new Date (this.user.tasks[i].endingDate);               
+          if( endingDate.getTime() > now.getTime() && this.user.tasks[i].state === 'en progreso') {
             this.tasks.push(this.user.tasks[i]);
-          }
+          }          
         break;
 
         case 'state':
@@ -157,13 +158,14 @@ export class MainboardComponent implements OnInit, OnDestroy {
 
         case 'oldest-todo':
           
-          let longestDurationWithoutChange = 0;
+          
           let lastChange = new Date (this.user.tasks[i].lastChange);
+          
 
           if(this.user.tasks[i].state === 'en progreso') {
-            const duration = now.getTime() - lastChange.getTime();
+            const duration = now.getTime() - lastChange.getTime();            
 
-            if (duration > longestDurationWithoutChange) {
+            if (duration > longestDurationWithoutChange) {              
               longestDurationWithoutChange = duration;
               oldestUnchangedTask = this.user.tasks[i];
             }

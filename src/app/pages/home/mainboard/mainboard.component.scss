@@ -9,6 +9,7 @@
     grid-template-rows: 90% auto;
     grid-template-columns: 20% auto;
     gap: 0.5%;
+    
 }
 
 .sidebar,
@@ -26,6 +27,7 @@
 .sidebar {
     grid-area: sidebar;
     gap: 20px;
+    padding-top: 20px;
 
     header,
     .filters {
@@ -88,6 +90,7 @@
 .content {
     grid-area: main;
     gap: 20px;
+    padding-top: 20px;
 
     header,
     .main-content {
@@ -103,10 +106,10 @@
 
         nav {
             display: flex;
-            align-items: center;
-            justify-content: space-around;            
             height: 60px;
-            padding: 0 20px;
+            align-items: center;
+            justify-content: space-around;     
+            padding: 0 20px;                    
 
             p {
                 color: var(--text-color);
@@ -119,7 +122,7 @@
                 transition: .5s ease-in-out;
                 cursor: pointer;
                 position: absolute;
-                left: 5%;
+                left: 8%;
             }
 
             .btn-menu,
@@ -225,7 +228,7 @@
                 justify-content: center;
                 gap: 1rem;
                 position: absolute;
-                right: 30px;
+                right: 50px;
 
                 .btn-icon {
                     font-size: 1.2rem;
@@ -309,8 +312,8 @@
 
 
     .main-content {
-        width: 95%;
-        min-height: 480px;
+        width: 95%;    
+        min-height: 480px;    
         background-color: var(--bg);
         display: flex;
         flex-direction: column;
@@ -325,9 +328,8 @@
             height: 60px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            margin: 20px 0 0 0;
+            justify-content: space-between;            
+            margin-top: 30px;
 
             p {
                 font-family: 'poppins';
@@ -336,6 +338,10 @@
 
             .custom-primary {
                 width: 12rem;
+            }
+
+            .btn-icon-custom {
+                display: none;
             }
 
 
@@ -412,10 +418,9 @@
             z-index: 2;
         }
 
-        header {
-            
-            width: 95%;
-            margin-top: 100px;
+        header {            
+            width: 95%;   
+            margin-top: 100px;         
             background-color: var(--bg);
         }
 
@@ -534,6 +539,34 @@
 
         .btn-search-icon:disabled {
             cursor: not-allowed;
+        }
+    }
+}
+
+
+@media (max-width: 450px) {
+    .content {
+        .main-content {
+            header {
+                align-items: center;
+                justify-content: center;
+                gap: 50px;
+
+                .custom-primary {
+                    display: none;
+                }
+
+                .btn-icon-custom {
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--bg);
+                    background-color: var(--items-color-gradient);                
+                    border-radius: 50% !important;
+                }
+            }
         }
     }
 }

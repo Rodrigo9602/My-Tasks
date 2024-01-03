@@ -15,6 +15,7 @@ import { Task } from '../../models/task.model';
 
 
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { DataService } from '../../services/data.service';
 import { Toast } from '../../global/toast.global';
 
@@ -30,13 +31,13 @@ export class TaskTableComponent implements OnInit, OnDestroy {
   public tasks: Array<Task> = [];
 
   // pagination vars
-  public pagedTasks: Array<Task> = [];
-  public pageSize: number = 4;
-  public pageIndex: number = 0;
-
+  public pagedTasks: Array<Task> = []; 
+  public pageSize: number = 4;  
+  public pageIndex: number = 0;  
 
   public deleteIcon = faTrashAlt;
   public updateIcon = faPenToSquare;
+  public addIcon = faPlus;
 
   @Input() userName: string = '';
   @Input() inputTasks: Array<Task> = [];
@@ -47,26 +48,35 @@ export class TaskTableComponent implements OnInit, OnDestroy {
 
   private suscriptions: Array<Subscription> = [];
 
-  constructor(private _dialog: MatDialog, private _taskService: TaskService, public datePipe: DatePipe, private dataService: DataService) { }
+  constructor(private _dialog: MatDialog, private _taskService: TaskService, public datePipe: DatePipe, private dataService: DataService) { 
+    if(window.innerWidth <= 670) {
+      this.pageSize = 1;
+    }
+  }
 
   ngOnInit(): void {
     if (this.inputTasks.length === 0) {
       this.dataService.task$.subscribe(tasks => {
         this.tasks = tasks;
+
         this.handlePageEvent({
           pageIndex: 0,
           pageSize: this.pageSize,
         });
+
+
       });
     } else {
       this.tasks = this.inputTasks;
+
       this.handlePageEvent({
         pageIndex: 0,
         pageSize: this.pageSize,
       });
+
     }
 
-    
+
 
   }
 
@@ -74,8 +84,8 @@ export class TaskTableComponent implements OnInit, OnDestroy {
     const dialogRef = this._dialog.open(
       DialogComponent, {
       width: '30%',
-      minWidth: '30rem',
-      height: '500px',
+      minWidth: '20rem',
+      minHeight: '500px',
       data: { form: 'addTask', dataObject: {} }
     });
 
@@ -100,11 +110,13 @@ export class TaskTableComponent implements OnInit, OnDestroy {
   }
 
 
+
+
   handlePageEvent(event: any) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     this.pagedTasks = this.tasks.slice(this.pageIndex * this.pageSize, this.pageIndex * this.pageSize + this.pageSize);
-    
+
   }
 
   formatDate(dateIso: Date) {
@@ -123,8 +135,8 @@ export class TaskTableComponent implements OnInit, OnDestroy {
       const dialogRef = this._dialog.open(
         DialogComponent, {
         width: '30%',
-        minWidth: '30rem',
-        height: '500px',
+        minWidth: '20rem',
+        minHeight: '500px',
         data: { form: 'updTask', dataObject: { task } }
       });
 

@@ -1,4 +1,3 @@
-
 <div class="task-table-message" *ngIf="tasks.length === 0; else taskTableWrapper">
     <p class="header">You have not task registered yet!</p>
     <p class="subheader">Lets change that</p>
@@ -13,6 +12,9 @@
         <header *ngIf="inputTasks.length === 0">
             <p>{{userName}}'s tasks</p>
             <button class="btn-primary" (click)="onAddTask()">Add new task</button>
+            <button class="btn-icon btn-icon-custom" (click)="onAddTask()">
+                <fa-icon [icon]="addIcon" />
+            </button>
         </header>
 
         <div class="table-wrapper">
@@ -55,8 +57,56 @@
                 </tbody>
             </table>
 
-            <mat-paginator [length]="tasks.length" [pageSize]="pageSize"
-                (page)="handlePageEvent($event)" aria-label="Select page">
+            <mat-paginator [length]="tasks.length" [pageSize]="pageSize" (page)="handlePageEvent($event)"
+                aria-label="Select page">
+            </mat-paginator>
+        </div>
+
+        <div class="cards-container">
+            <div class="cards-wrapper">
+                @for (task of pagedTasks; track task) {
+                <div class="card">
+
+                    <div class="card-header">
+                        <p>{{task.name}}</p>
+                        <p>{{task.description}}</p>
+                    </div>
+
+                    <div class="dates">
+                        <div class="creation-date">
+                            <p>created on: </p>
+                            <p>{{formatDate(task.creationDate)}}</p>
+                        </div>
+
+                        <div class="ending-date">
+                            <p>end on:</p>
+                            <p>{{formatDate(task.endingDate)}}</p>
+                        </div>
+
+                    </div>
+                    <div class="state">
+                        <p>current state: </p>
+                        <div [ngSwitch]="task.state">
+                            <p *ngSwitchCase="'creado'" style="color: #1f86f3;">creado</p>
+                            <p *ngSwitchCase="'en progreso'" style="color: #eff31f;">en progreso</p>
+                            <p *ngSwitchCase="'terminado'" style="color: #58f31f;">terminado</p>
+                            <p *ngSwitchCase="'no completado'" style="color: #f31f1f;">no completado</p>
+                        </div>
+                    </div>
+                    <div class="options-wrapper">
+                        <button (click)="updateTask(task)" class="btn-card">
+                            <fa-icon [icon]="updateIcon"></fa-icon>
+                        </button>
+                        <button (click)="deleteTask(task)" class="btn-card">
+                            <fa-icon [icon]="deleteIcon"></fa-icon>
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <mat-paginator [length]="tasks.length" [pageSize]="pageSize" (page)="handlePageEvent($event)"
+                aria-label="Select page">
             </mat-paginator>
         </div>
     </div>

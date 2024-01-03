@@ -124,6 +124,9 @@
                     <header>
                         <p>Search results</p>
                         <button class="btn-primary custom-primary" (click)="onEndSearch()">Back to tasks list</button>
+                        <button class="btn-icon btn-icon-custom" (click)="onEndSearch()">
+                            <fa-icon [icon]="returnIcon" />
+                        </button>
                     </header>
                     <div class="table-wrapper">
                         <app-task-table [userName]="user.name" (taskAdded)="onAddTask($event)"

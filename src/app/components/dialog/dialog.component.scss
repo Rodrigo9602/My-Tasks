@@ -1,19 +1,23 @@
 .modal-wrapper {
     width: 100%;
-    height: 600px;
+    min-height: 500px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: space-around;
+    justify-content: center;    
     background-color: var(--bg);
 
     h2 {
         font-family: 'poppins';
         color: var(--text-color);
     }   
-    .custom-form {
-        width: 410px;        
 
+    mat-dialog-content {
+        width: 100%;
+    }
+
+    .custom-form {
+        margin: 0 auto;
 
         .date-input {
             width: 75%;
@@ -22,14 +26,13 @@
         
     }
 
-    #upd-form {
-        margin-top: -20px;
+    #upd-form {   
+        
+
         mat-select {
             width: 80%;
-            height: 2rem;
-            border-radius: 0.5rem;
-            padding: 5px 20px 0 20px;
-            border: 1px solid var(--text-color);
+            height: 2rem;                      
+            border-bottom: 1px solid var(--text-color);
             color: var(--text-color);
             margin: 0 auto;
         }
@@ -44,7 +47,9 @@
         align-items: center;
         justify-content: center;
         gap: 30px;
+        
     }
 
     
 }
+
