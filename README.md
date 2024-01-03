@@ -11,6 +11,7 @@ The present repository has 3 branches, the first is the branch you are currently
 
 ## Initial Requirements
 [NodeJS](https://nodejs.org/) version 16 or higher.
+[MongoDB](https://www.mongodb.com/try/download/community) version 7.0.4
 
 ## Installation for backend
 
