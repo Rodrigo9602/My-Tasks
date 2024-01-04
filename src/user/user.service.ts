@@ -78,7 +78,7 @@ export class UserService {
 
   async removeTask(id:string, params:any) {
     try {
-      const user = await this.userModel.findById(id).exec();;
+      const user = await this.userModel.findById(id);
       if (!user) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
@@ -101,7 +101,7 @@ export class UserService {
       const user = await this.userModel.findByIdAndUpdate(id, { name: updateUserDto.name }, {
         new: true,
         useFindAndModify: false,
-      }).exec();
+      });
       if (!user) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
