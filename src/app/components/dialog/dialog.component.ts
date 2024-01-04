@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit} from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
@@ -12,6 +12,7 @@ import { TaskInterface } from '../../interfaces/task.interface';
 
 import { faUser, faFileLines, faFileText, faCalendarTimes, faCalendar, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { Toast } from '../../global/toast.global';
 
 
 
@@ -35,7 +36,7 @@ export class DialogComponent implements OnInit {
   public minDate: string = '';
   public states: Array<string> = ['creado', 'en progreso', 'terminado', 'no completado'];
   public showPassword: boolean = false;
-  
+
 
   public nameIcon = faUser;
   public taskIcon = faFileLines;
@@ -103,36 +104,46 @@ export class DialogComponent implements OnInit {
 
   onSubmit() {
 
-    switch (this.data.form) {
-      case 'addTask':
-        this.task.endingDate = this.date;
-        this.data.dataObject = this.task;
-        this.dialogRef.close(this.data.dataObject);
-        break;
+    const DATE = new Date(this.date);
+    if (DATE.getTime() < new Date().getTime()) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Invalid ending date'
+      });
+      this.onCancel();
+    } else {
+      switch (this.data.form) {
+        case 'addTask':
+          this.task.endingDate = this.date;
+          this.data.dataObject = this.task;
+          this.dialogRef.close(this.data.dataObject);
+          break;
 
-      case 'updTask':
-        if (this.data.dataObject.task.state === 'creado') {
-          if (!this.DateChanged) {
-            const utcDate = new Date(Date.UTC(
-              this.date.split('/')[2],
-              this.date.split('/')[1] - 1,
-              this.date.split('/')[0]
-            ));
-            const offset = new Date().getTimezoneOffset();
-            const date = new Date(utcDate.getTime() + offset * 60 * 1000);
-            this.taskUpdate.endingDate = date;
+        case 'updTask':
+          if (this.data.dataObject.task.state === 'creado') {
+            if (!this.DateChanged) {
+              const utcDate = new Date(Date.UTC(
+                this.date.split('/')[2],
+                this.date.split('/')[1] - 1,
+                this.date.split('/')[0]
+              ));
+              const offset = new Date().getTimezoneOffset();
+              const date = new Date(utcDate.getTime() + offset * 60 * 1000);
+              this.taskUpdate.endingDate = date;
+            }
+            this.data.dataObject.task = this.taskUpdate;
+            this.data.dataObject.task.endingDate = this.taskUpdate.endingDate.toISOString();
+            this.dialogRef.close(this.data.dataObject);
+          } else {
+            this.data.dataObject.task.state = this.taskUpdate.state;
+            this.dialogRef.close(this.data.dataObject);
           }
-          this.data.dataObject.task = this.taskUpdate;
-          this.data.dataObject.task.endingDate = this.taskUpdate.endingDate.toISOString();
-          this.dialogRef.close(this.data.dataObject);
-        } else {
-          this.data.dataObject.task.state = this.taskUpdate.state;
-          this.dialogRef.close(this.data.dataObject);
-        }
-        break;
+          break;
 
 
+      }
     }
+
   }
 
   onCancel() {

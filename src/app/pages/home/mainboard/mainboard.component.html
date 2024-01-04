@@ -42,7 +42,7 @@
                             required="">
 
                         <button type="button" class="btn-search-icon" (click)=" onFilter('search')"
-                            [disabled]="taskName.invalid">
+                            [disabled]="taskName.invalid || showSearchResults">
                             <fa-icon [icon]="searchIcon" />
                         </button>
                     </div>
@@ -105,7 +105,7 @@
                             required="">
 
                         <button type="button" class="btn-search-icon" (click)=" onFilter('search')"
-                            [disabled]="taskName.invalid">
+                            [disabled]="taskName.invalid || showSearchResults">
                             <fa-icon [icon]="searchIcon" />
                         </button>
                     </div>

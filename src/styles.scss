@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
-    --items-bg: #f5f6f8;
+    --items-bg: #ebecf0;
     --items-color-gradient: #3f8ae5;
     --items-color-gradient-sec: #0a4b9e;
     --items-color: #006bfb;
@@ -42,9 +42,10 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: center;   
     width: 30%;
-    min-width: 23rem;
+    min-width: 20rem;  
+    max-width: 25rem;  
     background-color: #ffffff3f;
     backdrop-filter: blur(4px);
     box-shadow: rgba(37, 37, 230, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;

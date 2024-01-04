@@ -29,37 +29,64 @@ export class LoginComponent implements OnInit, OnDestroy {
   public password: string = '';
 
   public showPassword: boolean = false;
-  private suscription:Subscription | undefined;
- 
+  private suscription: Subscription | undefined;
+
 
   constructor(private _sessionService: SessionService, private _router: Router) { }
-  
-  
+
+
   ngOnInit(): void {
     // clear localstorage
     localStorage.clear();
   }
 
-  onSubmit() {      
-    this.suscription = this._sessionService.login(this.email, this.password).subscribe({
-      next: res => {       
-        if(res.status === 401) {          
-          Toast.fire({
-            icon: 'error',
-            title: res.options.message
-          });
-        } else {
-        this._sessionService.setSession(res.id, res.access_token);
-        // show welcome alert
-        Toast.fire({
-          icon: 'success',
-          title: 'Welcome back!'
-        });
-        // redirect to home page
-        this._router.navigate(['/home']);
-        }        
-      },         
-    });   
+  onSubmit() {
+    // check if the input data is valid
+    const emailRegex = new RegExp(/^([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})$/);
+    const passwordRegex = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/);
+
+
+    if (!emailRegex.test(this.email) && !passwordRegex.test(this.password)) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Email and password are invalid',
+        text: 'Password must have at least: 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
+        timer: 3000,
+      });
+    } else if (!passwordRegex.test(this.password)) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Invalid password',
+        text: 'Password must have at least: 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
+        timer: 3000,
+      });
+    } else if (!emailRegex.test(this.email)) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Invalid email',
+      });
+    } else {
+
+      this.suscription = this._sessionService.login(this.email, this.password).subscribe({
+        next: res => {
+          if (res.status === 401) {
+            Toast.fire({
+              icon: 'error',
+              title: res.options.message
+            });
+          } else {
+            this._sessionService.setSession(res.id, res.access_token);
+            // show welcome alert
+            Toast.fire({
+              icon: 'success',
+              title: 'Welcome back!'
+            });
+            // redirect to home page
+            this._router.navigate(['/home']);
+          }
+        },
+      });
+    }
 
   }
 
@@ -68,7 +95,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.showPassword ? this.showIcon = faEyeSlash : this.showIcon = faEye;
   }
 
-  ngOnDestroy(): void {    
-    this.suscription?.unsubscribe();   
+  ngOnDestroy(): void {
+    this.suscription?.unsubscribe();
   }
 }
