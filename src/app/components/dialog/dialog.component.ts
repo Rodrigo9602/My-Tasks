@@ -104,8 +104,7 @@ export class DialogComponent implements OnInit {
 
   onSubmit() {
 
-    const DATE = new Date(this.date);
-    if (DATE.getTime() < new Date().getTime()) {
+    if (!this.validateDate()) {
       Toast.fire({
         icon: 'error',
         title: 'Invalid ending date'
@@ -139,11 +138,17 @@ export class DialogComponent implements OnInit {
             this.dialogRef.close(this.data.dataObject);
           }
           break;
-
-
       }
+
     }
 
+  }
+
+  validateDate():boolean {
+    const DATE = new Date(this.date);
+    DATE.setDate(DATE.getDate()+1); // offset calibration
+    const NOW = new Date();   
+    return DATE >= NOW;
   }
 
   onCancel() {
