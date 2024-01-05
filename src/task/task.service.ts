@@ -37,7 +37,14 @@ export class TaskService {
     
     try {
       const task = await this.findOne(id);
-      if (task) {
+      if (task) {      
+        const OLD_NAME = String(task.name); 
+        if (updateTaskDto.name !== OLD_NAME) {
+          const taskWithSameName = this.taskModel.exists({name: updateTaskDto.name});
+          if(taskWithSameName) {
+            throw new ConflictException('There is a task with the same name in database');
+          }
+        }
         const taskState = task.get('state');
         if(taskState !== updateTaskDto.state) {
           task.set({lastChange: new Date()});
