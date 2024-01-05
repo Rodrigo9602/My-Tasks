@@ -35,10 +35,28 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private _sessionService: SessionService, private _router: Router) { }
 
 
+  /**
+  * @method OnInit:
+  * This method clear the local storage in case that the user access this component manually
+  
+  * @returns void  
+  */
+
   ngOnInit(): void {
     // clear localstorage
     localStorage.clear();
   }
+
+  /**
+  * @method OnSubmit:
+  * This method first validates that the entries are correct,
+  * if they are not, it shows different alerts accordingly;
+  * If they are valid, access the login method of the authentication service.
+  * If authentication is performed, a session is established using the setSesion method of the Session service and
+  * is subsequently redirected to the home route of the application.
+
+  * @returns void  
+  */ 
 
   onSubmit() {
     // check if the input data is valid
@@ -90,10 +108,26 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   }
 
+
+  /**
+  * @method OnShowPassword:
+  * This method enables the display of the password and modifies the display icon rendered in the input
+  
+  * @returns void  
+  */ 
+
+
   onShowPassword() {
     this.showPassword = !this.showPassword;
     this.showPassword ? this.showIcon = faEyeSlash : this.showIcon = faEye;
   }
+
+  /**
+  * @method OnDestroy:
+  * This method unsuscribe all observers
+  
+  * @returns void  
+  */
 
   ngOnDestroy(): void {
     this.suscription?.unsubscribe();

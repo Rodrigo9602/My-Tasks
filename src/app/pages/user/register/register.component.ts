@@ -36,6 +36,15 @@ export class RegisterComponent implements OnDestroy {
   
   constructor(private _userService:UserService, private _router:Router){}
 
+/**
+  * @method OnSubmit:
+  * This method access the register method of the user service, inorder to perform a register,
+  * In case of succefull register it shows an alert and redirect to login page,
+  * in case of error on the request it shows an alert with the corresponding error 
+
+  * @returns void  
+  */ 
+
   onSubmit() {
     this.suscription = this._userService.register(this.name, this.email, this.password ).subscribe({
       next: res => {
@@ -57,6 +66,12 @@ export class RegisterComponent implements OnDestroy {
     });
   }
 
+
+  /**
+  * @method OnShowPassword:
+  * This method enables the display of the password and modifies the display icon rendered in the input
+  * @returns void  
+  */ 
   onShowPassword(type: string) {
     if(type === 'password') {
       this.showPassword = !this.showPassword;
@@ -66,6 +81,12 @@ export class RegisterComponent implements OnDestroy {
       this.showPasswordConfirmation ? this.showConfIcon = faEyeSlash : this.showConfIcon = faEye;
     }   
   }
+
+  /**
+  * @method OnDestroy:
+  * This method unsuscribe all observers
+  * @returns void  
+  */
 
   ngOnDestroy(): void {
     this.suscription?.unsubscribe(); 

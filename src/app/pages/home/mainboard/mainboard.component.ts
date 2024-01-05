@@ -41,7 +41,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
   public clockIcon = faClock;
   public returnIcon = faClose;
 
-  public opened:boolean = false;
+  public opened: boolean = false;
   public searchStr: string = '';
   public user: User;
   public currentMode: boolean = true;
@@ -60,7 +60,7 @@ export class MainboardComponent implements OnInit, OnDestroy {
     private _sessionService: SessionService,
     private _userService: UserService,
     private _mode: ModeConfigService,
-    private dataService: DataService,   
+    private dataService: DataService,
   ) {
     this.user = {
       _id: '',
@@ -70,6 +70,15 @@ export class MainboardComponent implements OnInit, OnDestroy {
       tasks: []
     };
   }
+
+  /**
+  * @method OnSubmit:
+  * This method collects the user id value stored in locaStorage and proceeds to search for it using the find method of the user service.
+  * If an error occurs in the validation, said error is displayed and the user is redirected back to the page login;
+  * If the user is found, the value of the observable in the dataService is updated, in order to provide global access to the data.
+
+  * @returns void  
+  */
 
   ngOnInit(): void {
     // get the user id
@@ -98,25 +107,51 @@ export class MainboardComponent implements OnInit, OnDestroy {
   };
 
 
+  /**
+  * @method onChangeMode:
+  * This method sets the value of the variable referring to the current display mode,
+  * changes the icon that is rendered in the navigation bar and updates the value of an observable related to the display mode
+
+  * @returns void  
+  */
+
   onChangeMode() {
     this.currentMode = !this.currentMode;
     this.currentMode ? this.modeIcon = faMoon : this.modeIcon = faSun;
     this._mode.changeMode(this.currentMode);
   };
 
+  /**
+    * @method toggleSidenav:
+    * This method allows you to control the state of the page's sidebar.
+    * 
+    * @returns void  
+    */
+
   toggleSidenav() {
-    this.opened = !this.opened;   
+    this.opened = !this.opened;
   }
 
   // user related methods
 
+  /**
+    * @method onUserMenu:
+    * This method allows you to control the user menu visualization.
+    
+    * @returns void  
+    */
 
 
   onUserMenu() {
     this.userMenuHide = !this.userMenuHide;
   };
 
-
+  /**
+      * @method onLogout:
+      * This method close the current session and clears the LocalStorage.
+      
+      * @returns void  
+      */
 
   onLogout() {
     this._sessionService.logout();
@@ -125,8 +160,19 @@ export class MainboardComponent implements OnInit, OnDestroy {
 
   // filters and search realated methods
 
-  // onFilter Method definition 
-  onFilter(type:string) {
+  /**
+     * @method onFilter:
+     * This method links 4 different ways of searching for information among the current data:
+     * the first is through a search for tasks by name, this uses regex to validate that all those tasks that have at least one matching word with respect to the chain are searched. searched text;
+     * the second is through the status of the tasks;
+     * the third form of search filters the task in the 'in progress' state that has been in that state for the longest time;
+     * the last method filters those tasks outside the completion time
+     
+     * @param {string} type: The type of search we are applying
+     * @returns void  
+     */
+
+  onFilter(type: string) {
     this.tasks = [];
     let longestDurationWithoutChange = 0;
     const now = new Date();
@@ -134,48 +180,48 @@ export class MainboardComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < this.user.tasks.length; i++) {
       switch (type) {
-        case 'search': 
+        case 'search':
           const escapedTerms = this.searchStr.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
           const regex = new RegExp(escapedTerms.split(' ').join('|'), 'gi');
 
           if (this.user.tasks[i].name.match(regex)) {
             this.tasks.push(this.user.tasks[i]);
           }
-        break;
+          break;
 
         case 'late-task':
-          let endingDate = new Date (this.user.tasks[i].endingDate);               
-          if( endingDate.getTime() > now.getTime() && this.user.tasks[i].state === 'en progreso') {
+          let endingDate = new Date(this.user.tasks[i].endingDate);
+          if (endingDate.getTime() > now.getTime() && this.user.tasks[i].state === 'en progreso') {
             this.tasks.push(this.user.tasks[i]);
-          }          
-        break;
+          }
+          break;
 
         case 'state':
           if (this.user.tasks[i].state === this.filter) {
             this.tasks.push(this.user.tasks[i]);
           }
-        break;
+          break;
 
         case 'oldest-todo':
-          
-          
-          let lastChange = new Date (this.user.tasks[i].lastChange);
-          
 
-          if(this.user.tasks[i].state === 'en progreso') {
-            const duration = now.getTime() - lastChange.getTime();            
 
-            if (duration > longestDurationWithoutChange) {              
+          let lastChange = new Date(this.user.tasks[i].lastChange);
+
+
+          if (this.user.tasks[i].state === 'en progreso') {
+            const duration = now.getTime() - lastChange.getTime();
+
+            if (duration > longestDurationWithoutChange) {
               longestDurationWithoutChange = duration;
               oldestUnchangedTask = this.user.tasks[i];
             }
-          }         
-          
-        break;
+          }
+
+          break;
       }
     }
 
-    if(oldestUnchangedTask) {
+    if (oldestUnchangedTask) {
       this.tasks.push(oldestUnchangedTask);
     }
 
@@ -196,19 +242,38 @@ export class MainboardComponent implements OnInit, OnDestroy {
     }
 
 
-    
+
   };
 
+  /**
+   * @method onEndSearch:
+   * This method is use it to end the current search, because the spa arquitecture of the app, there is not other way of showing the searched data
+   * on the same table component. It was a solution in the pursuit of performance, a way to avoid this method is creating a new component to render only the 
+   * searched data
+   
+   * @returns void
+   */
 
-  onEndSearch() {
+
+  onEndSearch(): void {
     this.searchStr = '';
     this.filter = 'undefined';
     this.stateSelector!.writeValue('undefined');
     this.stateSelector!.disabled = false;
     this.showSearchResults = false;
-  }; 
+  };
 
   // tasks operations realated methods
+
+  /**
+   * @method onAddTask:
+   * This method activate when and output event is emitted from the child component, and it access the
+   * addTask method of the userService to add the task to the task array of the user and update the value of the data observer
+   
+   * @returns void
+   * @param {Task} response: its the returning data from the child component onAddTask method
+   */
+
   onAddTask(response: Task) {
     this.suscriptions.push(this._userService.addTask(this.user._id, response._id).subscribe({
       next: res => {
@@ -229,6 +294,15 @@ export class MainboardComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * @method onAddTask:
+   * This method activate when and output event is emitted from the child component, it update the user task array
+   * with the returned response from the child component, and update de data observer
+   
+   * @returns void
+   * @param {Task} response: its the returning data from the child component updateTask method
+   */
+
   onUpdateTask(response: Task) {
 
     for (let i = 0; i < this.user.tasks.length; i++) {
@@ -238,8 +312,18 @@ export class MainboardComponent implements OnInit, OnDestroy {
     }
 
     this.dataService.updateTasks(this.user.tasks);
-    this.showSearchResults = false;
+    
   }
+
+
+  /**
+   * @method onAddTask:
+   * This method activate when and output event is emitted from the child component, it delete the task from the user task array
+   * in database, and update de data observer
+   
+   * @returns void
+   * @param {Task} response: its the returning data from the child component updateTask method
+   */
 
   onRemoveTask(response: Task) {
     this.suscriptions.push(this._userService.removeTask(this.user._id, response._id).subscribe({
@@ -258,10 +342,15 @@ export class MainboardComponent implements OnInit, OnDestroy {
       }
     })
     );
-    this.showSearchResults = false;
+   
   }
 
-
+  /**
+   * @method OnDestroy:
+   * This method unsuscribe all observers
+   
+   * @returns void  
+  */
 
   ngOnDestroy(): void {
     this.suscriptions.forEach(suscription => suscription.unsubscribe());
