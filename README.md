@@ -62,7 +62,7 @@ $ ng serve -o
 
 ## Running unit tests
 
-Run `npm test` to execute the unit tests via [JEST](https://jestjs.io/docs/).
+Run `npm run test` to execute the unit tests via [JEST](https://jestjs.io/docs/).
 
 
 
