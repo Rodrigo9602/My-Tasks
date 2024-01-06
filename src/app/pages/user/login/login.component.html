@@ -1,0 +1,39 @@
+<div class="content-wrapper">
+    <div class="form-wrapper">
+        <p class="header">Login</p>
+        <form #customform="ngForm" class="custom-form" id="login-form" (ngSubmit)="onSubmit()">
+            <div class="inputs-container">
+                <div class="input-wrapper">
+                    <input type="email" class="input" placeholder="email" name="userEmail" #userEmail="ngModel"
+                        [style.border]="!userEmail.valid && userEmail.touched ? '1px solid red':'1px solid #fff' "
+                        [(ngModel)]="email" required>
+                    <div class="input-icon">
+                        <fa-icon [icon]="emailIcon" />
+                    </div>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="{{ showPassword ? 'text' : 'password' }}" class="input" placeholder="password"
+                        name="userPassword"
+                        [style.border]="!userPassword.valid && userPassword.touched  ? '1px solid red':'1px solid #fff' "
+                        #userPassword="ngModel" [(ngModel)]="password" required>
+                    <div class="input-icon">
+                        <fa-icon [icon]="passIcon" />
+                    </div>
+                    <button type="button" class="btn-icon" (click)="onShowPassword()">
+                        <fa-icon [icon]="showIcon" />
+                    </button>
+
+                </div>
+            </div>
+
+            <button type="submit" class="btn-custom" [disabled]="customform.invalid">Sign in</button>
+        </form>
+
+        <div class="redirection-wrapper">
+            <p>You are not register yet? Join the family
+                <a class="redirection-link" [routerLink]="['/register']">here</a>
+            </p>
+        </div>
+    </div>
+</div>

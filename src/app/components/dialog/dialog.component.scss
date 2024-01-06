@@ -1,0 +1,55 @@
+.modal-wrapper {
+    width: 100%;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;    
+    background-color: var(--bg);
+
+    h2 {
+        font-family: 'poppins';
+        color: var(--text-color);
+    }   
+
+    mat-dialog-content {
+        width: 100%;
+    }
+
+    .custom-form {
+        margin: 0 auto;
+
+        .date-input {
+            width: 75%;
+            padding-right: 20px;
+        }
+        
+    }
+
+    #upd-form {   
+        
+
+        mat-select {
+            width: 80%;
+            height: 2rem;                      
+            border-bottom: 1px solid var(--text-color);
+            color: var(--text-color);
+            margin: 0 auto;
+        }
+        
+    }
+
+    mat-dialog-actions {
+        position: absolute;
+        bottom: 15px;
+        width: 100%;
+        display: flex;        
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        
+    }
+
+    
+}
+
