@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DialogComponent should match initial snapshot 1`] = `
+<div
+  id="root1"
+>
+  <div
+    class="modal-wrapper"
+  >
+    <div
+      class="titleSelection"
+    >
+      
+      
+    </div>
+    <mat-dialog-content
+      class="mat-mdc-dialog-content mdc-dialog__content"
+    >
+      
+      
+      
+      
+    </mat-dialog-content>
+  </div>
+</div>
+`;

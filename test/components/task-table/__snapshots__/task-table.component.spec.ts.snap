@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TaskTableComponent should match initial snapshot 1`] = `
+<div
+  id="root1"
+>
+  <div
+    class="task-table-message"
+  >
+    <p
+      class="header"
+    >
+      You have not task registered yet!
+    </p>
+    <p
+      class="subheader"
+    >
+      Lets change that
+    </p>
+    <button
+      class="btn-primary"
+    >
+      Add new task
+    </button>
+  </div>
+  
+  
+</div>
+`;

@@ -7,7 +7,11 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { UserService } from '../../../services/user.service';
 import { ModeConfigService } from '../../../services/mode.service';
+import { SessionService } from '../../../services/session.service';
+import { DataService } from '../../../services/data.service';
+
 import { User } from '../../../models/user.model';
+import { Task } from '../../../models/task.model';
 import { Subscription } from 'rxjs';
 
 import { TaskTableComponent } from '../../../components/task-table/task-table.component';
@@ -16,10 +20,8 @@ import { DialogComponent } from '../../../components/dialog/dialog.component';
 
 import { faMoon, faSun, faUserCircle, faEdit, faClock } from '@fortawesome/free-regular-svg-icons';
 import { faSearch, faRightFromBracket, faHeart, faCoffee, faClose } from '@fortawesome/free-solid-svg-icons';
-import { Task } from '../../../models/task.model';
+
 import { Toast } from '../../../global/toast.global';
-import { SessionService } from '../../../services/session.service';
-import { DataService } from '../../../services/data.service';
 
 
 
